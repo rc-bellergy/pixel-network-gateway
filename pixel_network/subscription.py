@@ -4,6 +4,7 @@ import asyncio
 from pixel_network.auth import get_jwt_token
 import os
 from dotenv import load_dotenv
+from pushbullet.notification import send_push_notification
 
 # Load environment variables from .env file
 load_dotenv()
@@ -72,3 +73,4 @@ async def listen_device_property_changes(url, subscription_query):
             retries = 0  # Reset retries if the connection was successful
 
     print("Max retries reached. Exiting...")
+    send_push_notification("pixel-network connection alert", f"Failed to connect to pixel-network. Maximum of {max_retries} retries reached. Abandoning attempt.")

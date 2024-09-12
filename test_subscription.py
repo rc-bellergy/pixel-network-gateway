@@ -27,6 +27,8 @@ query = """
                         id
                         name
                         temperature: property(propertyName: "Measurements/TEMPERATURE")
+                        humidity: property(propertyName: "Measurements/HUMIDITY")
+
                     }
                 }
             }
