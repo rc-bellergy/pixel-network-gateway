@@ -10,4 +10,4 @@ user_password = os.getenv('USER_PASSWORD')
 
 jwt_token = get_jwt_token(user_login, user_password, graphql_url)
 
-print(jwt_token)
+# print(jwt_token)
