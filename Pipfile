@@ -8,6 +8,8 @@ requests = "*"
 websockets = "*"
 python-dotenv = "*"
 paho-mqtt = "*"
+urllib3 = "==1.26.15"
+
 
 [dev-packages]
 

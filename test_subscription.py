@@ -3,6 +3,7 @@ import asyncio
 import os
 from dotenv import load_dotenv
 import paho.mqtt.client as mqtt
+import json
 
 # Load environment variables from .env file
 load_dotenv()
@@ -37,27 +38,27 @@ query = """
     }
     """
 
-# Sample data:
-# {'type': 'data', 'id': '1', 'payload': {'data': {'Objects': {'event': 'update', 'relatedNode': {'groupName': 'Measurements', 'property': 'TEMPERATURE', 'value': 27.3, 'updatedAt': '2024-09-14T21:49:37.102194+08:00', 'object': {'id': '38b67ce9-c052-41e6-b1d3-8ded52e7bbad', 'name': 'LoRaWAN Device (24-E1-24-13-6E-24-03-32)_YYS', 'temperature': 27.3, 'humidity': 36}}}}}}
+# sample_data = {'type': 'data', 'id': '1', 'payload': {'data': {'Objects': {'event': 'update', 'relatedNode': {'groupName': 'Measurements', 'property': 'TEMPERATURE', 'value': 27.3, 'updatedAt': '2024-09-14T21:49:37.102194+08:00', 'object': {'id': '38b67ce9-c052-41e6-b1d3-8ded52e7bbad', 'name': 'LoRaWAN Device (24-E1-24-13-6E-24-03-32)_YYS', 'temperature': 27.3, 'humidity': 36}}}}}}
 
 # send data to thingsboard usign MQTT
 def send_to_thingsboard(data):
 
     # MQTT settings
     mqtt_host = os.getenv('MQTT_HOST')
-    mqtt_port = os.getenv('MQTT_PORT')
-    mqtt_topic = os.getenv('MQTT_TOPIC')
+    mqtt_port = 1883
+    mqtt_topic = 'v1/devices/me/telemetry'
     mqtt_access_token = os.getenv('MQTT_ACCESS_TOKEN')
 
     # Extract the relevant data
-    temperature = data['payload']['data']['Objects']['relatedNode']['temperature']
-    humidity = data['payload']['data']['Objects']['relatedNode']['humidity']
+    related_node = data.get('payload', {}).get('data', {}).get('Objects', {}).get('relatedNode', {})
+    temperature = related_node.get('object', {}).get('temperature')
+    humidity = related_node.get('object', {}).get('humidity')
     
     # Create the message payload
     message = json.dumps({"temperature": temperature, "humidity": humidity})
     
     # Create an MQTT client instance
-    client = mqtt.Client()
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
     
     # Set the username for the MQTT broker
     client.username_pw_set(mqtt_access_token)
@@ -77,3 +78,5 @@ async def main():
         send_to_thingsboard(data)
 
 asyncio.run(main())
+
+# send_to_thingsboard(sample_data)
