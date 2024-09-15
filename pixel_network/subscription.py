@@ -57,7 +57,9 @@ async def listen_device_property_changes(url, subscription_query):
                         message = await websocket.recv()
                         data = json.loads(message)
                         if data.get('type') == 'ka':  # skip "keep-alive" messages
+                            print(".", end="", flush=True)
                             continue
+                        print()
                         yield data
                     except Exception as e:
                         print(f"Error receiving message: {e}")
