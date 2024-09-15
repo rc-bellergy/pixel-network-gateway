@@ -10,10 +10,11 @@ from pushbullet.notification import send_push_notification
 load_dotenv()
 
 graphql_url = os.getenv('GRAPHQL_URL')
+websocket_url = os.getenv('WEBSOCKET_URL')
 user_login = os.getenv('USER_LOGIN')
 user_password = os.getenv('USER_PASSWORD')
 
-async def listen_device_property_changes(url, subscription_query):
+async def listen_device_property_changes(subscription_query):
     max_retries = 5
     retry_delay = 30
     retries = 0
@@ -28,7 +29,7 @@ async def listen_device_property_changes(url, subscription_query):
             headers = {"Authorization": f"Bearer {jwt_token}"}
 
             async with websockets.connect(
-                url,
+                websocket_url,
                 subprotocols=["graphql-ws"],
                 extra_headers=headers
             ) as websocket:
